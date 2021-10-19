@@ -3,15 +3,16 @@
 # Right now it won't download same file name twice even if their contents are different.
 
 import email
-import getpass, imaplib
-import os
-import sys
+import imaplib
+from PIL import Image
+import io
 
 def download_images(user_name=None, password=None):
     """
     Download the images using Gmail
     @param user_name: User name of the Gmail account
     @param password: password of the Gmail account
+    @return a PIL image
     """
     if not user_name or not password:
         raise "no credential provided"
@@ -42,7 +43,7 @@ def download_images(user_name=None, password=None):
                     continue
                 fileName = part.get_filename()
                 if bool(fileName):
-                    filenames.append(part.get_payload(decode=True))
+                    filenames.append(Image.open(io.BytesIO(part.get_payload(decode=True))))
         imapSession.close()
         imapSession.logout()
     except :
