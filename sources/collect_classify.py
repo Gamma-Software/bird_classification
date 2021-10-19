@@ -1,7 +1,7 @@
 import sys
 import time
-#import tensorflow.compat.v2 as tf
-#import tensorflow_hub as hub
+import tensorflow.compat.v2 as tf
+import tensorflow_hub as hub
 import dl
 from PIL import Image
 import io
@@ -21,15 +21,16 @@ def credential():
         return user, passwd
 
 if __name__ == "__main__":
-    #module = hub.KerasLayer('https://tfhub.dev/google/aiy/vision/classifier/birds_V1/1')
+    module = hub.KerasLayer('https://tfhub.dev/google/aiy/vision/classifier/birds_V1/1')
     user_name, password = credential()
     try:
         images = dl.download_images(user_name, password)
-        image = Image.open(io.BytesIO(images[0]))
-        image2 = image.crop((450, 200, 900, 800))
-        image2.show()
-        #while True:
-        #    bird_classified = [classify(module, image) for image in get_images()]
-        #    time.sleep(60) # Do this every minutes
+        image_cropped = [image.crop((450, 200, 900, 800)).resize([224, 244]) for image in images]
+        bird_classified = [classify(module, image) for image in image_cropped]
+        print(bird_classified)
+        sys.exit(0)
+        while True:
+            bird_classified = [classify(module, image) for image in image_cropped]
+            time.sleep(60) # Do this every minutes
     except KeyboardInterrupt:
         sys.exit(0)
