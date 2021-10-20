@@ -20,6 +20,8 @@ def credential():
         f.close()
         return user, passwd
 
+
+# cherrypick from https://github.com/cmoon4/backyard_birdbot/blob/main/bird_detect.py
 if __name__ == "__main__":
     module = hub.KerasLayer('https://tfhub.dev/google/aiy/vision/classifier/birds_V1/1')
     user_name, password = credential()
