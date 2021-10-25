@@ -20,7 +20,6 @@ def detect_bird(image):
     print("Run bird detection")
     result = ts_detection_module(image_converted)
 
-    print(result)
     result_bird={"names":[],"scores":[],"boxes":[]}
     for name, score, box in zip(result['detection_class_entities'], result['detection_scores'], result['detection_boxes']):
             if name=='Bird':
@@ -28,8 +27,7 @@ def detect_bird(image):
                     result_bird["names"].append(name)
                     result_bird["scores"].append(score)
                     result_bird["boxes"].append(box)
-    print(result_bird)
-    return None
+    return result, result_bird
 
 def classify_bird(image: Image.Image):
     """Use the TensorFlow model to detect and classify the image of the bird"""
