@@ -1,17 +1,9 @@
 import sys
 import time
-import tensorflow.compat.v2 as tf
-import tensorflow_hub as hub
-import dl
+import retrieve_image_mail
+import detection_classification as dc
 from PIL import Image
 import io
-
-
-def classify(module, image):
-    """Use the TensorFlow model to detect and classify the image of the bird"""
-    if image:
-        return module(image)
-    return None
 
 def credential():
         f = open("data/credential.txt")
@@ -23,13 +15,12 @@ def credential():
 
 # cherrypick from https://github.com/cmoon4/backyard_birdbot/blob/main/bird_detect.py
 if __name__ == "__main__":
-    module = hub.KerasLayer('https://tfhub.dev/google/aiy/vision/classifier/birds_V1/1')
     user_name, password = credential()
     try:
-        images = dl.download_images(user_name, password)
-        image_cropped = [image.crop((450, 200, 900, 800)).resize([224, 244]) for image in images]
-        bird_classified = [classify(module, image) for image in image_cropped]
-        print(bird_classified)
+        #images = retrieve_image_mail.download_images(user_name, password)
+        #[print(dc.detect_bird(image)) for image in images]
+        image = Image.open("tests/data/01.jpg")
+        image.show()
         sys.exit(0)
         while True:
             bird_classified = [classify(module, image) for image in image_cropped]
