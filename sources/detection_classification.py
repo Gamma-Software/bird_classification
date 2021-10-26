@@ -16,9 +16,8 @@ def manipulate_image(image_converted: Image.Image, crop = (450, 200, 900, 800)):
 
 def detect_bird(image):
     # Convert image scale
-    image_converted = tf.image.convert_image_dtype(image, tf.float32)[tf.newaxis, ...]
     print("Run bird detection")
-    result = ts_detection_module(image_converted)
+    result = ts_detection_module(image)
 
     result_bird={"names":[],"scores":[],"boxes":[]}
     for name, score, box in zip(result['detection_class_entities'], result['detection_scores'], result['detection_boxes']):
