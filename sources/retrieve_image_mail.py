@@ -13,6 +13,28 @@ class EmailParser():
         self.user_name = user_name
         self.password = password
 
+    def get_total_nb_mail(self):
+        """
+        Get the email metadata between to dates
+        """
+        if not self.user_name or not self.password:
+            raise "no credential provided"
+        total_nb_email = 0
+        try:
+            imapSession = imaplib.IMAP4_SSL('imap.gmail.com')
+            typ, accountDetails = imapSession.login(self.user_name, self.password)
+
+            if typ != 'OK':
+                raise 'Not able to sign in!'
+            
+            total_nb_email = int(imapSession.select("INBOX")[1][0])
+        except:
+            print('Not able to download metadatas')
+        finally:
+            imapSession.close()
+            imapSession.logout()
+        return total_nb_email
+
     def get_today_email_metadata(self):
         return self.get_email_metadata(date.today(), date.today())
 
