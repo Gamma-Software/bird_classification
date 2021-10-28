@@ -68,6 +68,36 @@ class EmailParser():
             imapSession.close()
             imapSession.logout()
         return pd.DataFrame(todays_email, columns=["dates"])
+    
+    def get_all_email(self):
+        """
+        Get the email metadata between to dates
+        """
+        if not self.user_name or not self.password:
+            raise "no credential provided"
+        emails = []
+        try:
+            imapSession = imaplib.IMAP4_SSL('imap.gmail.com')
+            typ, accountDetails = imapSession.login(self.user_name, self.password)
+
+            if typ != 'OK':
+                raise 'Not able to sign in!'
+            
+            imapSession.select("INBOX")
+            typ, data = imapSession.search(None, 'ALL')
+            if typ != 'OK':
+                raise 'Error searching Inbox.0'
+            for data in reversed(data[0].split()): # fetching is sorted by date
+                typ, data = imapSession.fetch(data, '(RFC822)')
+                raw_dates = data[0][1].decode('utf-8').split("\n")[7][6:-13]
+                date = datetime.datetime.strptime(raw_dates, "%a, %d %b %Y %H:%M:%S")
+                emails.append(date)
+        except:
+            print('Not able to download metadatas')
+        finally:
+            imapSession.close()
+            imapSession.logout()
+        return pd.DataFrame(emails, columns=["dates"])
 
     def download_images(self):
         """
