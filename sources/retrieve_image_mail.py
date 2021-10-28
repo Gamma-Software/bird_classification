@@ -54,10 +54,9 @@ class EmailParser():
             typ, data = imapSession.search(None, 'ALL')
             if typ != 'OK':
                 raise 'Error searching Inbox.0'
-            
             for data in reversed(data[0].split()): # fetching is sorted by date
                 typ, data = imapSession.fetch(data, '(RFC822)')
-                raw_dates = data[0][1].decode('utf-8').split("\n")[7][6:-13].encode('ascii', 'ignore')
+                raw_dates = data[0][1].decode('utf-8').split("\n")[7][6:-13]
                 date = datetime.datetime.strptime(raw_dates, "%a, %d %b %Y %H:%M:%S")
                 if date.day == datetime.datetime.today().day:
                     todays_email.append(date)

@@ -22,6 +22,6 @@ if __name__ == "__main__":
     email_parser = EmailParser(user_name, password)
     try:
         engine = create_engine('sqlite:///data/database.db', echo=False)
-        email_parser.get_todays_email().to_sql('date', index_label='dates', con=engine, if_exists='replace')
+        email_parser.get_todays_email().to_sql('date', con=engine, if_exists='replace')
     except KeyboardInterrupt:
         sys.exit(0)
