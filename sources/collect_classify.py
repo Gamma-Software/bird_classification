@@ -6,10 +6,11 @@ import io
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
+import os
 
 
 def credential():
-        f = open("data/credential.txt")
+        f = open("/mnt/data/workspace/bird_classification/data/credential.txt")
         user = f.readline().strip("\n")
         passwd = f.readline().strip("\n")
         f.close()
@@ -21,7 +22,8 @@ if __name__ == "__main__":
     user_name, password = credential()
     email_parser = EmailParser(user_name, password)
     try:
-        engine = create_engine('sqlite:///data/database.db', echo=False)
+        engine = create_engine('sqlite:////mnt/data/workspace/bird_classification/data/database.db', echo=False)
         email_parser.get_todays_email().to_sql('date', con=engine, if_exists='replace')
+        #email_parser.get_all_email().to_sql('date', con=engine, if_exists='replace')
     except KeyboardInterrupt:
         sys.exit(0)
