@@ -57,7 +57,8 @@ class EmailParser():
             for data in reversed(data[0].split()): # fetching is sorted by date
                 typ, data = imapSession.fetch(data, '(RFC822)')
                 raw_dates = data[0][1].decode('utf-8').split("\n")[7][6:-13]
-                date = datetime.datetime.strptime(raw_dates, "%a, %d %b %Y %H:%M:%S")
+                tz = int(data[0][1].decode('utf-8').split("\n")[7][-13:-9])
+                date = datetime.datetime.strptime(raw_dates, "%a, %d %b %Y %H:%M:%S") - datetime.timedelta(hours= tz)
                 if date.day == datetime.datetime.today().day:
                     todays_email.append(date)
                 else:
@@ -76,27 +77,28 @@ class EmailParser():
         if not self.user_name or not self.password:
             raise "no credential provided"
         emails = []
-        try:
-            imapSession = imaplib.IMAP4_SSL('imap.gmail.com')
-            typ, accountDetails = imapSession.login(self.user_name, self.password)
+        imapSession = imaplib.IMAP4_SSL('imap.gmail.com')
+        typ, accountDetails = imapSession.login(self.user_name, self.password)
 
-            if typ != 'OK':
-                raise 'Not able to sign in!'
-            
-            imapSession.select("INBOX")
-            typ, data = imapSession.search(None, 'ALL')
-            if typ != 'OK':
-                raise 'Error searching Inbox.0'
-            for data in reversed(data[0].split()): # fetching is sorted by date
-                typ, data = imapSession.fetch(data, '(RFC822)')
+        if typ != 'OK':
+            raise 'Not able to sign in!'
+        
+        imapSession.select("INBOX")
+        typ, data = imapSession.search(None, 'ALL')
+        if typ != 'OK':
+            raise 'Error searching Inbox.0'
+        for data in reversed(data[0].split()): # fetching is sorted by date
+            typ, data = imapSession.fetch(data, '(RFC822)')
+            try:
                 raw_dates = data[0][1].decode('utf-8').split("\n")[7][6:-13]
-                date = datetime.datetime.strptime(raw_dates, "%a, %d %b %Y %H:%M:%S")
+                tz = int(data[0][1].decode('utf-8').split("\n")[7][-13:-9])
+                date = datetime.datetime.strptime(raw_dates, "%a, %d %b %Y %H:%M:%S") - datetime.timedelta(hours= tz)
                 emails.append(date)
-        except:
-            print('Not able to download metadatas')
-        finally:
-            imapSession.close()
-            imapSession.logout()
+            except:
+                print("decoding failed")
+
+        imapSession.close()
+        imapSession.logout()
         return pd.DataFrame(emails, columns=["dates"])
 
     def download_images(self):
