@@ -23,7 +23,7 @@ if __name__ == "__main__":
     email_parser = EmailParser(user_name, password)
     try:
         engine = create_engine('sqlite:////mnt/data/workspace/bird_classification/data/database.db', echo=False)
-        email_parser.get_todays_email().to_sql('date', con=engine, if_exists='replace')
-        #email_parser.get_all_email().to_sql('date', con=engine, if_exists='replace')
+        email_parser.get_todays_email().to_sql('dates', con=engine, if_exists='append')
+        #email_parser.get_all_email().to_sql('dates', con=engine, if_exists='append')
     except KeyboardInterrupt:
         sys.exit(0)
